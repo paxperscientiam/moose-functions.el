@@ -9,23 +9,19 @@
 (require 'font-lock)
 
 
-(defvar moose-sheets-mode-hook nil
-  "initial hook for moose-sheets-mode."
-  )
 
 
+(defgroup moose-sheets-group nil
+  "Major mode for making spreadsheets, using a maxima backend."
+  :group 'languages)
 
-
-
+(defvar moose-sheets-mode-hook nil)
 
 ;; (defvar omg (window-width))
 ;; (defconst www 8)
 ;; (defvar hc (/ omg www))
 
 ;; (defvar heads "")
-
-
-
 
 
 ;; (concat "%" (number-to-string (/ omg www)) "d")
@@ -43,12 +39,11 @@
 
 
 (defun ms/index-length ()
-  (setq-local line-count (count-lines 1 (point-max)))
-  (length (number-to-string line-count)))
+  (length (number-to-string (count-lines 1 (point-max)))))
 
 
 (defun ms/linum-format (change-beg change-end prev-len)
-  "OOO."
+  "Hp."
   (setq-local line-format-string (concat "|" "%" (number-to-string (ms/index-length)) "d |"))
   (setq-local linum-format line-format-string)
   (set-face-attribute 'linum nil
@@ -91,8 +86,6 @@
 
 
 
-(add-to-list 'after-change-functions 'ms/header-line-format t)
-(add-to-list 'after-change-functions 'ms/linum-format t)
 
 ;; (eval-after-load
 ;;     (setq header-line-format " ")
@@ -108,23 +101,34 @@
 
 
 
-;;;###autoload
-(add-to-list 'auto-mode-alist '("\\.sheet\\'" . moose-sheets-mode))
 
 
 (defun ms/maxima-send-line ()
   (maxima-send-line)
   )
 
+
+
 (define-derived-mode moose-sheets-mode maxima-mode "moose sheets mode"
   "Major mode for editing maxima based spreadsheets."
+  :child moose-sheets-mode
+  :parent maxima-mode
+  ;; :group moose-sheets-group
   :syntax-table moose-sheets-syntax-table
-  (setq-local inhibit-modification-hooks nil)
-  (ms/linum-format)
-  (ms/generate-column-headers)
-  (ms/header-line-format)
-  )
+  :body
+  (ms/linum-format 0 0 0)
+  (let ((inhibit-modification-hooks nil))
+    (add-to-list 'after-change-functions 'ms/header-line-format t)
+    (add-to-list 'after-change-functions 'ms/linum-format t)))
 
+
+;;    (ms/linum-format))
+;;  (ms/generate-column-headers)
+;;  (ms/header-line-format)
+
+
+;;;###autoload
+(add-to-list 'auto-mode-alist '("\\.sheets?\\'" . moose-sheets-mode))
 
 
 
