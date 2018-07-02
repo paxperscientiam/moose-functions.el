@@ -1,4 +1,4 @@
-
+;;; -*- lexical-binding: t; -*-
 
 ;;; Code:
 (require 's)
@@ -64,32 +64,19 @@
 
 (defun ms/generate-column-headers ()
   "This is a docstring."
-  (defconst ms-header-char-width 8)
-  (defvar ms-buffer-width 'window-width))
-
+  (mapconcat 'identity (cl-loop for x to (/ (window-width) 8) collect (concat "      " (number-to-string (+ x 1)))) "|" ))
 
 
 (defun ms/header-line-format (change-beg change-end prev-len)
   "OK."
   (setq-local zeroth-header-length (s-repeat (+ 1 (ms/index-length)) " "))
-  (setq-local header-line-format (concat "|" zeroth-header-length "|     A|     B|"))
+  (setq-local header-line-format (concat "|" zeroth-header-length "|" (ms/generate-column-headers)))
   (set-face-attribute 'header-line nil
                       :background "light gray"
                       :foreground "black"
                       :weight 'semi-bold
                       :underline 't
                       ))
-
-
-
-;;;(defun ms/set-default-face ()
-
-
-
-
-;; (eval-after-load
-;;     (setq header-line-format " ")
-;;   (set-face-attribute 'header-line nil :background "orange"))
 
 ;;; syntax table
 (defconst moose-sheets-syntax-table
@@ -117,14 +104,11 @@
   :syntax-table moose-sheets-syntax-table
   :body
   (ms/linum-format 0 0 0)
+  (ms/header-line-format 0 0 0)
   (let ((inhibit-modification-hooks nil))
     (add-to-list 'after-change-functions 'ms/header-line-format t)
     (add-to-list 'after-change-functions 'ms/linum-format t)))
 
-
-;;    (ms/linum-format))
-;;  (ms/generate-column-headers)
-;;  (ms/header-line-format)
 
 
 ;;;###autoload
