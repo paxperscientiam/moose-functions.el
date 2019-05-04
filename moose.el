@@ -11,10 +11,7 @@
 
 
 ;; ;; Shortcut to fix indentation of entire buffer
-;; (defun moose/indent-current-buffer ()
-;;   (interactive)
-;;   (indent-region (point-min) (point-max)))
-;; (global-set-key (kbd "C-c TAB") 'moose/indent-current-buffer)
+
 
 
 ;; (provide 'moose)
