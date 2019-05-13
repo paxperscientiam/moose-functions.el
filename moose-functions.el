@@ -16,27 +16,38 @@
 
 ;;(global-set-key (kbd "C-x p") 'proced)
 
-
-
 ;; Turn off the minor mode in the minibuffer
-(defun turn-off-moose-mode ()
+(defun moose/turn-off-moose-mode ()
   "Turn off moose-mode."
   (moose-mode -1))
-(add-hook 'minibuffer-setup-hook #'turn-off-moose-mode)
+(add-hook 'minibuffer-setup-hook #'moose/turn-off-moose-mode)
 
 
-(defun moose/init-commands ()
-  (progn
-    (menu-bar-mode -1)
-    (fset 'yes-or-no-p 'y-or-n-p)
-    (save-place-mode 1)))
+;; (defun moose/init-commands ()
+;;   (progn
+;;     (menu-bar-mode -1)
+;;     (fset 'yes-or-no-p 'y-or-n-p)
+;;     (save-place-mode 1)))
+
+(defun use-region-p ()
+  (and (region-active-p)
+       (or use-empty-active-region
+           (> (region-end) (region-beginning)))))
+
+(defun dsedivec/called-via-key-binding (cmd)
+  "Returns non-nil if `this-command-keys' is bound to CMD."
+  (eq (key-binding (this-command-keys)) cmd))
 
 
-
-(defun moose/popup-count-words-region (&optional start end)
+(defun moose/popup-count-words-region (start end)
+  "Get word count for positive length active region."
   (interactive "r")
-  (let ((print-escape-newlines t))
-    (popup-tip (concat (number-to-string (count-words start end)) " words"))))
+  (cond ((and (use-region-p)
+              (dsedivec/called-via-key-binding #'moose/popup-count-words-region))
+         (progn (let ((print-escape-newlines t))
+           (popup-tip (concat (number-to-string (count-words start end)) " words")))
+                (message "huh")))
+        ((dsedivec/called-via-key-binding #'moose/popup-count-words-region) (insert (this-command-keys)))))
 
 
 (defun moose/popup-count-words-up-to-point ()
@@ -64,35 +75,7 @@
     (global-set-key "\C-x\C-m" 'compile-make)))
 
 
-;; (defun moose/toggle-cua-mode ()
-;;   (interactive)
-;;   (if (not (bound-and-true-p cua-mode))
-;;       (cua-mode -1)
-;;     (cua-mode t)))
 
-;; (defun moose/toggle-cua-mode ()
-;;   (interactive)
-;;   (cua-mode (if cua-mode 0 nil))
-;;   (message "cua-mode is now %s" cua-mode))
-
-;; (defun moose/toggle-cua-mode ()
-;;   (interactive)
-;;   (cua-mode 'toggle)
-;;   (message "cua-mode is now %s" cua-mode))
-
-;;; Toggle CUA mode, starting CUA rect if turning on
-;; (defun ublt/toggle-cua-rect (&optional reopen)
-;;   (interactive "P")
-;;   (if (not cua-mode)
-;;       (progn
-;;         (cua-mode +1)
-;;         ;; HACK: calling it directly does not seem to work even though
-;;         ;; the help is shown
-;;         (run-at-time "0 sec" nil 'cua-set-rectangle-mark))
-;;     (progn
-;;       (cua-clear-rectangle-mark)
-;;       (cua-mode -1))))
-;; (define-key global-map (kbd "<f1>") )
 
 (defvar moose-mode-map nil "Keymap for `moose-mode-mode'")
 
