@@ -83,7 +83,7 @@
   (setq moose-mode-map (make-sparse-keymap))
   (define-key moose-mode-map (kbd "C-c TAB") 'moose/indent-current-buffer)
   (define-key moose-mode-map (kbd "C-x k") 'moose/kill-current-buffer)
-  (define-key moose-mode-map (kbd "w") #'moose/popup-count-words-region)
+  (define-key moose-mode-map (kbd "C-c w") #'moose/popup-count-words-region)
   (define-key moose-mode-map (kbd "<f1>") 'cua-mode)
   )
 
