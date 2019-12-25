@@ -45,7 +45,7 @@
   (cond ((and (use-region-p)
               (dsedivec/called-via-key-binding #'moose/popup-count-words-region))
          (progn (let ((print-escape-newlines t))
-           (popup-tip (concat (number-to-string (count-words start end)) " words")))
+                  (popup-tip (concat (number-to-string (count-words start end)) " words")))
                 (message "huh")))
         ((dsedivec/called-via-key-binding #'moose/popup-count-words-region) (insert (this-command-keys)))))
 
@@ -53,6 +53,12 @@
 (defun moose/popup-count-words-up-to-point ()
   (let ((print-escape-newlines t))
     (popup-tip (concat (number-to-string (count-words 1 (point))) " words"))))
+
+(defun moose/backward-kill-line (arg)
+  "Kill ARG lines backward.
+https://www.emacswiki.org/emacs/BackwardKillLine"
+  (interactive "p")
+  (kill-line (- 1 arg)))
 
 
 (defun moose/indent-current-buffer ()
@@ -75,6 +81,20 @@
     (global-set-key "\C-x\C-m" 'compile-make)))
 
 
+;; (defun moose/compile-for-emacs-mode ()
+;;   emacs-lisp-byte-compile-and-load)
+
+;; (defalias 'moose/compile (lambda ()
+;;                 ""
+;;                 (interactive)
+;;                 (moose/compile-for-emacs-mode)))
+
+;; (add-hook 'emacs-lisp-mode-hook '(lambda ()
+;;                                    (defun moose/compile ()
+;;                                      (progn
+;;                                        (emacs-lisp-byte-compile-and-load)))))
+
+;;; (global-set-key [f12] 'compile)
 
 
 (defvar moose-mode-map nil "Keymap for `moose-mode-mode'")
@@ -84,7 +104,9 @@
   (define-key moose-mode-map (kbd "C-c TAB") 'moose/indent-current-buffer)
   (define-key moose-mode-map (kbd "C-x k") 'moose/kill-current-buffer)
   (define-key moose-mode-map (kbd "C-c w") #'moose/popup-count-words-region)
+  (define-key moose-mode-map (kbd "M-k") 'moose/backward-kill-line)
   (define-key moose-mode-map (kbd "<f1>") 'cua-mode)
+  (define-key moose-mode-map (kbd "<f12>") 'compile)
   )
 
 ;;;###autoload
